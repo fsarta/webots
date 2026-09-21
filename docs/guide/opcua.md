@@ -90,3 +90,34 @@ When the embedded server is enabled at connection time, every mapping is also ex
 
 The connection dialog supports the `None`, `Basic256Sha256`, `Basic128Rsa15` and `Aes128_Sha256_RsaOaep` security policies and username/password authentication.
 Certificate management for encrypted endpoints uses the open62541 application options (see the open62541 documentation for PKI setup).
+
+## Trying the Workflow without a PLC
+
+Two zero-hardware options are available:
+
+1. **Mock backend** (no installation): when Webots is built *without* the open62541 stack, the OPC-UA dock transparently uses an in-memory backend which accepts any endpoint and simulates a demo PLC (`ns=1;s=PLC.Setpoint`, `ns=1;s=PLC.Speed`, `ns=1;s=PLC.Running`, `ns=1;s=PLC.Line.Counter`). Ideal to explore the connection dialog and the variable chooser.
+2. **Demo server + native stack**: run the bundled demo PLC on any machine with Python:
+
+   ```
+   pip install opcua
+   python scripts/opcua_demo_server.py
+   ```
+
+   It exposes `ns=2;s=PLC.Setpoint` (writable), `ns=2;s=PLC.Speed`, `ns=2;s=PLC.Running` and `ns=2;s=PLC.Line.Counter` on `opc.tcp://localhost:4840`, printing the exact node ids at startup. Connect from Webots and bind, for example:
+
+   | Webots target | OPC UA node id | direction | scale |
+   | ------------- | -------------- | --------- | ----- |
+   | `device:four_bar/crank_motor/targetPosition` | `ns=2;s=PLC.Setpoint` | read | 1 |
+   | `device:four_bar/crank_sensor/position` | `ns=2;s=PLC.Speed` | write | 1 |
+
+   together with the [four-bar demo world](mechanism-editor.md#demo-world) this gives the complete digital-twin loop: drive the motor from the PLC side and publish the sensor value back.
+
+## Building on Windows
+
+On Windows the whole toolchain runs in the **MSYS2 MinGW64** shell (see the build instructions of the wiki). For the native OPC-UA stack additionally install:
+
+```
+pacman -S git mingw-w64-x86_64-cmake
+```
+
+before running `make release` (the `open62541` dependency step is skipped automatically — with a warning — when `git`/`cmake` are missing, and the mock backend is used instead).

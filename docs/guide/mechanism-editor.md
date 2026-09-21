@@ -67,3 +67,14 @@ Use the **Planar** checkbox to switch the analysis between planar (3-DOF) and sp
 - Give every link a unique `name`: `SolidReference` endpoints resolve links by name.
 - The **Auto Layout** and **Reset Layout** buttons recompute the diagram layout.
 - The editor works on any mechanism found in the world, including non-robot mechanisms.
+
+## Demo World
+
+A ready-to-use planar four-bar linkage with a closed kinematic chain ships with the tests:
+
+```
+tests/manual_tests/worlds/mechanism_four_bar_linkage.wbt
+```
+
+Open it with `File > Open World...`, pause the simulation and open the Mechanism Editor: you will see the closed loop as a green diamond (the `SolidReference` joint) and the mobility report showing **1 DOF** with the **Planar** checkbox enabled (with the spatial analysis the same loop is correctly reported as needing a special geometric alignment — the parallel hinge axes).
+The world also contains a `crank_motor` / `crank_sensor` device pair, handy for the [OPC-UA tutorial](opcua.md).

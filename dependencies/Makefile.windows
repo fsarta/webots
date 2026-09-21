@@ -143,4 +143,8 @@ open62541: $(WEBOTS_HOME)/include/open62541/open62541.h
 
 $(WEBOTS_HOME)/include/open62541/open62541.h:
 	@echo "# Installing open62541"
-	@WEBOTS_HOME=$(WEBOTS_HOME) $(WEBOTS_HOME)/scripts/install/open62541_installer.sh
+	@if command -v cmake >/dev/null 2>&1 && command -v git >/dev/null 2>&1; then \
+	  WEBOTS_HOME=$(WEBOTS_HOME) $(WEBOTS_HOME)/scripts/install/open62541_installer.sh; \
+	else \
+	  echo "# WARNING: git/cmake not found: skipping open62541 (the OPC-UA module will use the mock backend)"; \
+	fi
