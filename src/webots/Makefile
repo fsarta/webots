@@ -42,10 +42,12 @@ WB_ENGINE_INCLUDE        = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(ODE_INCLUD
 WB_CONTROL_INCLUDE       = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) -Icore -Iengine -Imaths -Inodes -Inodes/utils -Iode -Ivrml -Iutil
 # dependency of NODES on QT_GUI is necessary in WbImageTexture to retrieve the size of a texture before loading it in Wren
 WB_NODES_INCLUDE         = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_GUI_INCLUDE) $(ODE_INCLUDE) $(CONTROLLER_INCLUDE) $(OIS_INCLUDE) $(FREETYPE_INCLUDE) $(WREN_INCLUDE) $(STB_INCLUDE) $(ASSIMP_INCLUDE) -Iapp -Icore -isystem external/siphash -Imaths -Inodes -Inodes/utils -Iode -Iplugins -Isound -Iutil -Ivrml
-WB_APP_INCLUDE           = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(ODE_INCLUDE) $(WREN_INCLUDE) -Icontrol -Icore -Ieditor -Iengine -Imaths -Inodes -Inodes/utils -Iplugins -Iscene_tree -Ivrml
-WB_SCENE_TREE_INCLUDE    = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(ASSIMP_INCLUDE) -isystem external/siphash -Iapp -Icore -Ieditor -Imaths -Inodes -Inodes/utils -Iode -Iuser_commands -Ivrml -Iwidgets
+WB_APP_INCLUDE           = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(ODE_INCLUDE) $(WREN_INCLUDE) -Icontrol -Icore -Ieditor -Iengine -Imaths -Imechanism -Inodes -Inodes/utils -Iopcua -Iplugins -Iscene_tree -Ivrml
+WB_SCENE_TREE_INCLUDE    = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(ASSIMP_INCLUDE) -isystem external/siphash -Iapp -Icore -Ieditor -Imaths -Imechanism -Inodes -Inodes/utils -Iode -Iopcua -Iuser_commands -Ivrml -Iwidgets
 WB_SOUND_INCLUDE         = $(QT_CORE_INCLUDE) $(QT_XML_INCLUDE) $(ODE_INCLUDE) $(PICO_INCLUDE) -Icore -Imaths -Inodes -Inodes/utils -Isound -Ivrml
-WB_GUI_INCLUDE           = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_WEBSOCKETS_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(QT_OPENGL_INCLUDE) $(QT_OPENGL_WIDGETS_INCLUDE) $(ODE_INCLUDE) $(WREN_INCLUDE) -Iapp -Icontrol -Icore -Iwidgets -Ieditor -Iengine -isystem external/siphash -Imaths -Inodes -Inodes/utils -Iplugins -Iscene_tree -Isound -Iuser_commands -Iutil -Ivrml
+WB_GUI_INCLUDE           = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_WEBSOCKETS_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(QT_OPENGL_INCLUDE) $(QT_OPENGL_WIDGETS_INCLUDE) $(ODE_INCLUDE) $(WREN_INCLUDE) -Iapp -Icontrol -Icore -Iwidgets -Ieditor -Iengine -isystem external/siphash -Imaths -Imechanism -Inodes -Inodes/utils -Iopcua -Iplugins -Iscene_tree -Isound -Iuser_commands -Iutil -Ivrml
+WB_MECHANISM_INCLUDE     = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) -Icore -Imaths -Imechanism -Inodes -Inodes/utils -Iuser_commands -Ivrml
+WB_OPCUA_INCLUDE         = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) -Icore -Imaths -Inodes -Inodes/utils -Iopcua -Ivrml
 WB_RENDER_INCLUDE        = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_OPENGL_INCLUDE) $(QT_WIDGETS_INCLUDE) $(WREN_INCLUDE) -isystem external/siphash
 
 HOSTTYPE ?= $(shell uname -m)
@@ -174,7 +176,7 @@ LIBS += -lode
 endif
 endif
 
-ALL_INCLUDE        = -Iapp -Icontrol -Icore -Iwidgets -Ieditor -Iengine -isystem external/siphash -Igui -Imaths -Inodes -Inodes/utils -Iplugins -Iscene_tree -Isound -Iuser_commands -Ivrml -Iutil -Iexternal/compilation_timestamp
+ALL_INCLUDE        = -Iapp -Icontrol -Icore -Iwidgets -Ieditor -Iengine -isystem external/siphash -Igui -Imaths -Imechanism -Inodes -Inodes/utils -Iopcua -Iplugins -Iscene_tree -Isound -Iuser_commands -Ivrml -Iutil -Iexternal/compilation_timestamp
 
 CONTROLLER_INCLUDE = -I$(WEBOTS_PATH)/include/controller/c
 ODE_INCLUDE        = -Iode -isystem $(WEBOTS_PATH)/include/ode
@@ -311,6 +313,7 @@ QT_SOURCES = WbAboutBox.cpp \
   WbInertialUnit.cpp \
   WbJoint.cpp \
   WbJointDevice.cpp \
+  WbJointManipulator.cpp \
   WbJointParameters.cpp \
   WbJoystickInterface.cpp \
   WbJoystickListener.cpp \
@@ -327,6 +330,9 @@ QT_SOURCES = WbAboutBox.cpp \
   WbMassChecker.cpp \
   WbMaterial.cpp \
   WbMatter.cpp \
+  WbMechanismCanvas.cpp \
+  WbMechanismEditorDock.cpp \
+  WbMechanismModel.cpp \
   WbMesh.cpp \
   WbMFBool.cpp \
   WbMFColor.cpp \
@@ -355,6 +361,11 @@ QT_SOURCES = WbAboutBox.cpp \
   WbNodeReader.cpp \
   WbNormal.cpp \
   WbOdeContext.cpp \
+  WbOpcUaBrowserModel.cpp \
+  WbOpcUaConnectionDialog.cpp \
+  WbOpcUaDock.cpp \
+  WbOpcUaManager.cpp \
+  WbOpcUaVariableBrowserDialog.cpp \
   WbOpenSampleWorldDialog.cpp \
   WbPaintTexture.cpp \
   WbPbrAppearance.cpp \
@@ -584,6 +595,26 @@ OTHER_SOURCES = \
   WbWrenVertexArrayFrameListener.cpp \
   WbWriter.cpp
 
+OTHER_SOURCES += \
+  WbKinematicGraphCore.cpp \
+  WbOpcUaJson.cpp \
+  WbOpcUaMapping.cpp \
+  WbOpcUaMockBackend.cpp \
+  WbOpcUaTarget.cpp \
+  WbOpcUaValue.cpp
+
+# native OPC-UA stack (open62541): enabled when the amalgamation is installed
+# by scripts/install/open62541_installer.sh
+OPEN62541_HEADER = $(WEBOTS_PATH)/include/open62541/open62541.h
+ifneq (,$(wildcard $(OPEN62541_HEADER)))
+CXXFLAGS += -DWB_USE_OPEN62541
+WB_OPCUA_INCLUDE += -I$(WEBOTS_PATH)/include/open62541
+INCLUDE += -I$(WEBOTS_PATH)/include/open62541
+OTHER_SOURCES += \
+  WbOpcUaOpen62541Backend.cpp
+LIBS += $(WEBOTS_PATH)/lib/webots/libopen62541.a
+endif
+
 ifeq ($(OSTYPE),windows)
 QT_SOURCES += \
   WbVirtualRealityHeadset.cpp
@@ -609,8 +640,8 @@ endif
 .PRECIOUS: $(MOC_FILES)
 
 vpath %.o $(OBJDIR)
-vpath %.hpp app control core widgets editor engine external/siphash gui maths nodes nodes/utils ode wren plugins scene_tree sound user_commands vrml
-vpath %.cpp app control core widgets editor engine external/siphash gui maths nodes nodes/utils ode wren plugins scene_tree sound user_commands vrml $(OBJDIR)
+vpath %.hpp app control core widgets editor engine external/siphash gui maths mechanism nodes nodes/utils ode opcua wren plugins scene_tree sound user_commands vrml
+vpath %.cpp app control core widgets editor engine external/siphash gui maths mechanism nodes nodes/utils ode opcua wren plugins scene_tree sound user_commands vrml $(OBJDIR)
 
 default:
 	@echo "Type one of the following (OSTYPE is \""$(OSTYPE)"\"):"
@@ -729,6 +760,14 @@ webots.o:gui/webots.rc gui/webots.ico gui/manifest.xml
 	@echo "# compiling" $<
 	@$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(WB_GUI_INCLUDE) $< -o $(OBJDIR)/$@
 
+%.o: mechanism/%.cpp
+	@echo "# compiling" $<
+	@$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(WB_MECHANISM_INCLUDE) $< -o $(OBJDIR)/$@
+
+%.o: opcua/%.cpp
+	@echo "# compiling" $<
+	@$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(WB_OPCUA_INCLUDE) $< -o $(OBJDIR)/$@
+
 %.o: nodes/utils/%.cpp
 	@echo "# compiling" $<
 	@$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(WB_NODES_INCLUDE) $< -o $(OBJDIR)/$@
@@ -808,6 +847,14 @@ $(OBJDIR)/x86_64/%.o: external/siphash/%.cpp
 $(OBJDIR)/x86_64/%.o: gui/%.cpp
 	@echo "# compiling" $< "(x86_64)"
 	@$(CXX) -target x86_64-apple-macos12 -c $(CFLAGS) $(CXXFLAGS) $(WB_GUI_INCLUDE) $< -o $@
+
+$(OBJDIR)/x86_64/%.o: mechanism/%.cpp
+	@echo "# compiling" $< "(x86_64)"
+	@$(CXX) -target x86_64-apple-macos12 -c $(CFLAGS) $(CXXFLAGS) $(WB_MECHANISM_INCLUDE) $< -o $@
+
+$(OBJDIR)/x86_64/%.o: opcua/%.cpp
+	@echo "# compiling" $< "(x86_64)"
+	@$(CXX) -target x86_64-apple-macos12 -c $(CFLAGS) $(CXXFLAGS) $(WB_OPCUA_INCLUDE) $< -o $@
 
 $(OBJDIR)/x86_64/%.o: nodes/utils/%.cpp
 	@echo "# compiling" $< "(x86_64)"
@@ -889,6 +936,14 @@ $(OBJDIR)/arm64/%.o: external/siphash/%.cpp
 $(OBJDIR)/arm64/%.o: gui/%.cpp
 	@echo "# compiling" $< "(arm64)"
 	@$(CXX) -target arm64-apple-macos12 -c $(CFLAGS) $(CXXFLAGS) $(WB_GUI_INCLUDE) $< -o $@
+
+$(OBJDIR)/arm64/%.o: mechanism/%.cpp
+	@echo "# compiling" $< "(arm64)"
+	@$(CXX) -target arm64-apple-macos12 -c $(CFLAGS) $(CXXFLAGS) $(WB_MECHANISM_INCLUDE) $< -o $@
+
+$(OBJDIR)/arm64/%.o: opcua/%.cpp
+	@echo "# compiling" $< "(arm64)"
+	@$(CXX) -target arm64-apple-macos12 -c $(CFLAGS) $(CXXFLAGS) $(WB_OPCUA_INCLUDE) $< -o $@
 
 $(OBJDIR)/arm64/%.o: nodes/utils/%.cpp
 	@echo "# compiling" $< "(arm64)"

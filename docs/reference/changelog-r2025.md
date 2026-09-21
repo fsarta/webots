@@ -1,5 +1,11 @@
 # Webots R2025 Change Log
 
+## Unreleased
+  - Enhancements
+    - Added a CAD-like **Mechanism Editor** (`Tools > Mechanism Editor`) for graphical management of joints and links with Fusion-360-style 3D manipulators, closed kinematic chain creation (`SolidReference` endpoints) and Grübler–Kutzbach mobility validation.
+    - Added a **native OPC-UA module** with a client-side variable chooser to bind remote OPC UA variables to Webots targets (motors, sensors, fields), an embedded OPC-UA server exposing the mapped variables, engineering conversions and `<world>.opcua.json` mapping files.
+    - Added standalone unit tests for the kinematic graph analysis and the OPC-UA core (`tests/src`).
+
 ## Webots R2025b
   - Enhancements
     - Added proper `Accelerometer` and `Gyro` nodes for the KHR-3HV robot ([#6959](https://github.com/cyberbotics/webots/pull/6959)).

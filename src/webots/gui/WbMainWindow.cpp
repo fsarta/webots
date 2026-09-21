@@ -56,6 +56,10 @@
 #include "WbRenderingDeviceWindowFactory.hpp"
 #include "WbRobot.hpp"
 #include "WbRobotWindow.hpp"
+#include "WbMechanismEditorDock.hpp"
+#include "WbMechanismModel.hpp"
+#include "WbOpcUaDock.hpp"
+#include "WbOpcUaManager.hpp"
 #include "WbSaveWarningDialog.hpp"
 #include "WbSceneTree.hpp"
 #include "WbSelection.hpp"
@@ -220,6 +224,8 @@ WbMainWindow::WbMainWindow(bool minimizedOnStart, WbTcpServer *tcpServer, QWidge
 
 WbMainWindow::~WbMainWindow() {
   delete mFactoryLayout;
+  WbMechanismModel::cleanup();
+  WbOpcUaManager::cleanup();
 }
 
 void WbMainWindow::lockFullScreen(bool isLocked) {
@@ -399,6 +405,20 @@ void WbMainWindow::createMainTools() {
   addDock(mTextEditor);
   connect(mTextEditor, &WbBuildEditor::reloadRequested, this, &WbMainWindow::reloadWorld, Qt::QueuedConnection);
   connect(mTextEditor, &WbBuildEditor::resetRequested, this, &WbMainWindow::resetWorldFromGui, Qt::QueuedConnection);
+
+  // CAD-like Mechanism Editor (joints, links, closed kinematic chains)
+  mMechanismEditor = new WbMechanismEditorDock(this);
+  addDockWidget(Qt::LeftDockWidgetArea, mMechanismEditor, Qt::Vertical);
+  addDock(mMechanismEditor);
+  connect(mSimulationView->sceneTree(), &WbSceneTree::nodeSelected, mMechanismEditor,
+          &WbMechanismEditorDock::notifyNodeSelected);
+  connect(WbMechanismModel::instance(), &WbMechanismModel::selectionRequested, WbSelection::instance(),
+          &WbSelection::selectNodeFromSceneTree);
+
+  // native OPC-UA I/O
+  mOpcUaDock = new WbOpcUaDock(this);
+  addDockWidget(Qt::RightDockWidgetArea, mOpcUaDock, Qt::Vertical);
+  addDock(mOpcUaDock);
 
   connect(mSimulationView->sceneTree(), &WbSceneTree::documentationRequest, this, &WbMainWindow::showOnlineDocumentation);
   // this instruction does nothing but prevents issues resizing QDockWidgets
@@ -721,6 +741,10 @@ void WbMainWindow::enableToolsWidgetItems(bool enabled) {
   WbActionManager::setActionEnabledSilently(mSimulationView->toggleSceneTreeAction(), enabled);
   if (mTextEditor)
     WbActionManager::setActionEnabledSilently(mTextEditor->toggleViewAction(), enabled);
+  if (mMechanismEditor)
+    WbActionManager::setActionEnabledSilently(mMechanismEditor->toggleViewAction(), enabled);
+  if (mOpcUaDock)
+    WbActionManager::setActionEnabledSilently(mOpcUaDock->toggleViewAction(), enabled);
   for (int i = 0; i < mConsoles.size(); ++i)
     WbActionManager::setActionEnabledSilently(mConsoles.at(i)->toggleViewAction(), enabled);
 }
@@ -767,6 +791,10 @@ QMenu *WbMainWindow::createToolsMenu() {
   menu->addAction(mSimulationView->toggleSceneTreeAction());
   if (mTextEditor)
     menu->addAction(mTextEditor->toggleViewAction());
+  if (mMechanismEditor)
+    menu->addAction(mMechanismEditor->toggleViewAction());
+  if (mOpcUaDock)
+    menu->addAction(mOpcUaDock->toggleViewAction());
 
   QAction *action = new QAction(this);
   action->setText(tr("Restore &Layout"));
@@ -1344,6 +1372,12 @@ void WbMainWindow::updateAfterWorldLoading(bool reloading, bool firstLoad) {
     mRecentFiles->makeRecent(world->fileName());
 
   mSimulationView->setWorld(WbSimulationWorld::instance());
+
+  // refresh the Mechanism Editor and the OPC-UA I/O dock for the new world
+  if (mMechanismEditor)
+    mMechanismEditor->refresh();
+  if (mOpcUaDock)
+    mOpcUaDock->refresh();
 
   // update 'view' menu
   const WbPerspective *perspective = world->perspective();

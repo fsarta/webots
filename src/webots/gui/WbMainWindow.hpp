@@ -168,6 +168,8 @@ private:
   int mExitStatus;
   QList<WbConsole *> mConsoles;
   WbBuildEditor *mTextEditor;
+  WbMechanismEditorDock *mMechanismEditor;
+  WbOpcUaDock *mOpcUaDock;
   WbSimulationView *mSimulationView;
   WbRecentFilesList *mRecentFiles;
   WbOdeDebugger *mOdeDebugger;

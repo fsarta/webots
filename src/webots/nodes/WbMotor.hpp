@@ -55,6 +55,7 @@ public:
   double currentVelocity() const { return mCurrentVelocity; }
   int kinematicVelocitySign() const { return mKinematicVelocitySign; }
   void setTargetPosition(double position);
+  double targetPosition() const { return mTargetPosition; }
   void resetPhysics();
   double energyConsumption() const override;
   void powerOn(bool) override;

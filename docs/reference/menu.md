@@ -122,6 +122,7 @@
     - [Troubleshooting](troubleshooting.md)
     - [Execution Scheme](execution-scheme.md)
 - [Robot Window Plugin](robot-window-plugin.md)
+- [OPC-UA](opcua.md)
 - [Webots World Files](webots-world-files.md)
     - [Generalities](generalities.md)
     - [Nodes and Keywords](nodes-and-keywords.md)

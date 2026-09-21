@@ -87,9 +87,12 @@ void WbMechanismModel::collectNode(WbNode *node, long parentLinkId) {
 
   WbSolid *solid = dynamic_cast<WbSolid *>(node);
   if (solid) {
-    const long id = mGraph.addLink(solid->name().toStdString(), solid->isStatic());
-    mSolids[id] = solid;
-    mLinkIds[solid] = id;
+    long id = linkIdOfSolid(solid);
+    if (id < 0) {
+      id = mGraph.addLink(solid->name().toStdString(), solid->isStatic());
+      mSolids[id] = solid;
+      mLinkIds[solid] = id;
+    }
     parentLinkId = id;
   }
 

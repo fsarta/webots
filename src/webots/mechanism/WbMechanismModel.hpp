@@ -32,6 +32,7 @@ class WbBasicJoint;
 class WbField;
 class WbNode;
 class WbSolid;
+class WbVariant;
 
 class WbMechanismModel : public QObject {
   Q_OBJECT
