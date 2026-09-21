@@ -61,6 +61,7 @@
 #include "WbVersion.hpp"
 #include "WbVideoRecorder.hpp"
 #include "WbViewpoint.hpp"
+#include "WbJointManipulator.hpp"
 #include "WbVisualBoundingSphere.hpp"
 #include "WbWheelEvent.hpp"
 #include "WbWorldInfo.hpp"
@@ -101,6 +102,7 @@ WbView3D::WbView3D() :
   mLoadingWorldOverlay(NULL),
   mVirtualRealityHeadsetOverlay(NULL),
   mContactPointsRepresentation(NULL),
+  mJointManipulator(NULL),
   mWrenRenderingContext(NULL),
   mPhysicsRefresh(false),
   mScreenshotRequested(false),
@@ -915,6 +917,9 @@ void WbView3D::logWrenStatistics() const {
 void WbView3D::prepareWorldLoading() {
   WbWrenOpenGlContext::makeWrenCurrent();
 
+  delete mJointManipulator;
+  mJointManipulator = NULL;
+
   // reset text labels
   WbWrenLabelOverlay::removeAllLabels();
 
@@ -1640,6 +1645,9 @@ void WbView3D::mousePressEvent(QMouseEvent *event) {
   if (!mWorld)
     return;
 
+  if (mJointManipulator && mJointManipulator->mousePressEvent(event))
+    return;
+
   cleanupWheel();
 
   // if we didn't close an overlay but still clicked on one (without this being
@@ -1711,6 +1719,9 @@ void WbView3D::leaveEvent(QEvent *event) {
 
 void WbView3D::mouseMoveEvent(QMouseEvent *event) {
   if (!mWorld)
+    return;
+
+  if (mJointManipulator && mJointManipulator->mouseMoveEvent(event))
     return;
 
   updateMousesPosition(false, true);
@@ -2125,6 +2136,10 @@ bool WbView3D::isContextMenuShortcut(const QMouseEvent *event) {
 }
 
 void WbView3D::mouseReleaseEvent(QMouseEvent *event) {
+  if (mJointManipulator && mJointManipulator->mouseReleaseEvent(event)) {
+    WbWrenWindow::mouseReleaseEvent(event);
+    return;
+  }
   WbWrenWindow::mouseReleaseEvent(event);
 
   mLastButtonState = event->buttons();
