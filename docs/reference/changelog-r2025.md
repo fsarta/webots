@@ -2,9 +2,9 @@
 
 ## Unreleased
   - Enhancements
-    - Added a CAD-like **Mechanism Editor** (`Tools > Mechanism Editor`) for graphical management of joints and links with Fusion-360-style 3D manipulators, closed kinematic chain creation (`SolidReference` endpoints) and Grübler–Kutzbach mobility validation.
-    - Added a **native OPC-UA module** with a client-side variable chooser to bind remote OPC UA variables to Webots targets (motors, sensors, fields), an embedded OPC-UA server exposing the mapped variables, engineering conversions and `<world>.opcua.json` mapping files.
-    - Added standalone unit tests for the kinematic graph analysis and the OPC-UA core (`tests/src`).
+    - Added the **Robot Creator** (`Tools > Robot Creator...`), a dedicated window to build robots starting from STL/OBJ meshes with Fusion-360-style CAD snap points (endpoint, midpoint, circle center, centroid, grid) for joint placement, closed kinematic chain support (`SolidReference` endpoints) and Grübler–Kutzbach mobility validation.
+    - Added a **native OPC-UA module** in its own window (`Tools > OPC-UA I/O...`) with a client-side variable chooser to bind remote OPC UA variables to Webots targets (motors, sensors, fields), an embedded OPC-UA server exposing the mapped variables, engineering conversions and `<world>.opcua.json` mapping files.
+    - Added standalone unit tests for the kinematic graph analysis, the OPC-UA core and the Robot Creator cores (`tests/src`).
 
 ## Webots R2025b
   - Enhancements

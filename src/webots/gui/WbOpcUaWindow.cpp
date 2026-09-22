@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "WbOpcUaDock.hpp"
+#include "WbOpcUaWindow.hpp"
 
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
@@ -28,7 +28,7 @@
 
 static const int ID_ROLE = Qt::UserRole;
 
-WbOpcUaDock::WbOpcUaDock(QWidget *parent) : WbDockWidget(parent) {
+WbOpcUaWindow::WbOpcUaWindow(QWidget *parent) : WbDockWidget(parent) {
   setWindowTitle(tr("OPC-UA I/O"));
   setObjectName("OpcUaWidget");  // for dock perspective
 
@@ -42,13 +42,13 @@ WbOpcUaDock::WbOpcUaDock(QWidget *parent) : WbDockWidget(parent) {
 
   QHBoxLayout *buttons = new QHBoxLayout();
   mConnectButton = new QPushButton(tr("Connect..."), container);
-  connect(mConnectButton, &QPushButton::clicked, this, &WbOpcUaDock::openConnectionDialog);
+  connect(mConnectButton, &QPushButton::clicked, this, &WbOpcUaWindow::openConnectionDialog);
   buttons->addWidget(mConnectButton);
   mDisconnectButton = new QPushButton(tr("Disconnect"), container);
-  connect(mDisconnectButton, &QPushButton::clicked, this, &WbOpcUaDock::disconnectFromServer);
+  connect(mDisconnectButton, &QPushButton::clicked, this, &WbOpcUaWindow::disconnectFromServer);
   buttons->addWidget(mDisconnectButton);
   mBrowseButton = new QPushButton(tr("Browse variables..."), container);
-  connect(mBrowseButton, &QPushButton::clicked, this, &WbOpcUaDock::openVariableBrowser);
+  connect(mBrowseButton, &QPushButton::clicked, this, &WbOpcUaWindow::openVariableBrowser);
   buttons->addWidget(mBrowseButton);
   layout->addLayout(buttons);
 
@@ -66,36 +66,36 @@ WbOpcUaDock::WbOpcUaDock(QWidget *parent) : WbDockWidget(parent) {
 
   QHBoxLayout *bottomButtons = new QHBoxLayout();
   mRemoveButton = new QPushButton(tr("Remove mapping"), container);
-  connect(mRemoveButton, &QPushButton::clicked, this, &WbOpcUaDock::removeSelectedMapping);
+  connect(mRemoveButton, &QPushButton::clicked, this, &WbOpcUaWindow::removeSelectedMapping);
   bottomButtons->addWidget(mRemoveButton);
   QPushButton *loadButton = new QPushButton(tr("Load"), container);
-  connect(loadButton, &QPushButton::clicked, this, &WbOpcUaDock::loadMappings);
+  connect(loadButton, &QPushButton::clicked, this, &WbOpcUaWindow::loadMappings);
   bottomButtons->addWidget(loadButton);
   QPushButton *saveButton = new QPushButton(tr("Save"), container);
-  connect(saveButton, &QPushButton::clicked, this, &WbOpcUaDock::saveMappings);
+  connect(saveButton, &QPushButton::clicked, this, &WbOpcUaWindow::saveMappings);
   bottomButtons->addWidget(saveButton);
   bottomButtons->addStretch();
   layout->addLayout(bottomButtons);
-  setWidget(container);
+  setCentralWidget(container);
 
   WbOpcUaManager *manager = WbOpcUaManager::instance();
-  connect(manager, &WbOpcUaManager::connectionStateChanged, this, &WbOpcUaDock::updateConnectionState);
-  connect(manager, &WbOpcUaManager::mappingStoreChanged, this, &WbOpcUaDock::onMappingStoreChanged);
-  connect(manager, &WbOpcUaManager::mappingValueChanged, this, &WbOpcUaDock::onMappingValueChanged);
-  connect(manager, &WbOpcUaManager::errorOccurred, this, &WbOpcUaDock::showError);
+  connect(manager, &WbOpcUaManager::connectionStateChanged, this, &WbOpcUaWindow::updateConnectionState);
+  connect(manager, &WbOpcUaManager::mappingStoreChanged, this, &WbOpcUaWindow::onMappingStoreChanged);
+  connect(manager, &WbOpcUaManager::mappingValueChanged, this, &WbOpcUaWindow::onMappingValueChanged);
+  connect(manager, &WbOpcUaManager::errorOccurred, this, &WbOpcUaWindow::showError);
 
   refresh();
 }
 
-WbOpcUaDock::~WbOpcUaDock() {
+WbOpcUaWindow::~WbOpcUaWindow() {
 }
 
-void WbOpcUaDock::refresh() {
+void WbOpcUaWindow::refresh() {
   updateConnectionState();
   onMappingStoreChanged();
 }
 
-void WbOpcUaDock::openConnectionDialog() {
+void WbOpcUaWindow::openConnectionDialog() {
   WbOpcUaConnectionDialog dialog(this);
   if (dialog.exec() != QDialog::Accepted)
     return;
@@ -108,7 +108,7 @@ void WbOpcUaDock::openConnectionDialog() {
     manager->loadMappings(error);  // auto-load the world's mapping file when present
 }
 
-void WbOpcUaDock::openVariableBrowser() {
+void WbOpcUaWindow::openVariableBrowser() {
   WbOpcUaManager *manager = WbOpcUaManager::instance();
   if (!manager->isConnected()) {
     showError(tr("Connect to an OPC-UA endpoint first."));
@@ -119,24 +119,24 @@ void WbOpcUaDock::openVariableBrowser() {
   dialog.exec();
 }
 
-void WbOpcUaDock::disconnectFromServer() {
+void WbOpcUaWindow::disconnectFromServer() {
   WbOpcUaManager::instance()->disconnectFromServer();
 }
 
-void WbOpcUaDock::removeSelectedMapping() {
+void WbOpcUaWindow::removeSelectedMapping() {
   const int row = mTable->currentRow();
   if (row < 0)
     return;
   WbOpcUaManager::instance()->removeMapping(mTable->item(row, 0)->data(ID_ROLE).toString());
 }
 
-void WbOpcUaDock::loadMappings() {
+void WbOpcUaWindow::loadMappings() {
   QString error;
   if (!WbOpcUaManager::instance()->loadMappings(error))
     showError(error);
 }
 
-void WbOpcUaDock::saveMappings() {
+void WbOpcUaWindow::saveMappings() {
   QString error;
   if (!WbOpcUaManager::instance()->saveMappings(error))
     showError(error);
@@ -144,7 +144,7 @@ void WbOpcUaDock::saveMappings() {
     mStatusLabel->setText(tr("Mappings saved to %1").arg(WbOpcUaManager::instance()->mappingFilePath()));
 }
 
-void WbOpcUaDock::updateConnectionState() {
+void WbOpcUaWindow::updateConnectionState() {
   WbOpcUaManager *manager = WbOpcUaManager::instance();
   if (manager->isConnected()) {
     QString text = tr("Connected to %1 (%2 backend)")
@@ -159,7 +159,7 @@ void WbOpcUaDock::updateConnectionState() {
   mBrowseButton->setEnabled(manager->isConnected());
 }
 
-void WbOpcUaDock::onMappingStoreChanged() {
+void WbOpcUaWindow::onMappingStoreChanged() {
   const std::vector<wbopcua::Mapping> &mappings = WbOpcUaManager::instance()->mappingStore().mappings();
   mTable->setRowCount((int)mappings.size());
   for (int i = 0; i < (int)mappings.size(); ++i) {
@@ -179,7 +179,7 @@ void WbOpcUaDock::onMappingStoreChanged() {
   }
 }
 
-void WbOpcUaDock::onMappingValueChanged(const QString &id, const QString &displayValue) {
+void WbOpcUaWindow::onMappingValueChanged(const QString &id, const QString &displayValue) {
   for (int i = 0; i < mTable->rowCount(); ++i) {
     if (mTable->item(i, 0)->data(ID_ROLE).toString() == id) {
       mTable->item(i, 4)->setText(displayValue);
@@ -189,6 +189,6 @@ void WbOpcUaDock::onMappingValueChanged(const QString &id, const QString &displa
   }
 }
 
-void WbOpcUaDock::showError(const QString &message) {
+void WbOpcUaWindow::showError(const QString &message) {
   mStatusLabel->setText("<span style='color:#b00000'>" + message + "</span>");
 }

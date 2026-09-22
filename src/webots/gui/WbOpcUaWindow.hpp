@@ -15,8 +15,8 @@
 // Description: OPC-UA I/O dock: connection status, mapping table with live
 //              values and access to the variable chooser.
 
-#ifndef WB_OPC_UA_DOCK_HPP
-#define WB_OPC_UA_DOCK_HPP
+#ifndef WB_OPC_UA_WINDOW_HPP
+#define WB_OPC_UA_WINDOW_HPP
 
 #include "WbDockWidget.hpp"
 
@@ -25,12 +25,12 @@ class QLabel;
 class QPushButton;
 class QTableWidget;
 
-class WbOpcUaDock : public WbDockWidget {
+class WbOpcUaWindow : public QMainWindow {
   Q_OBJECT
 
 public:
-  explicit WbOpcUaDock(QWidget *parent = NULL);
-  virtual ~WbOpcUaDock();
+  explicit WbOpcUaWindow(QWidget *parent = NULL);
+  virtual ~WbOpcUaWindow();
 
   void refresh();
 

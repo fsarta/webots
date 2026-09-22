@@ -21,7 +21,7 @@
     - [The User Interface](the-user-interface.md)
     - [The 3D Window](the-3d-window.md)
     - [The Scene Tree](the-scene-tree.md)
-    - [The Mechanism Editor](mechanism-editor.md)
+    - [The Robot Creator](robot-creator.md)
     - [The Console](the-console.md)
     - [Preferences](preferences.md)
     - [Citing Webots](citing-webots.md)

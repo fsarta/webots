@@ -20,9 +20,9 @@ It builds `open62541` and installs the amalgamated header into `include/open6254
 The `src/webots/Makefile` detects them automatically (`WB_USE_OPEN62541`) and links the native stack.
 On Linux and macOS the dependency is also part of the `dependencies` Makefiles (`make open62541`).
 
-## The OPC-UA I/O Dock
+## The OPC-UA I/O Window
 
-Open it from the **Tools** menu: `Tools > OPC-UA I/O`.
+Open it from the **Tools** menu: `Tools > OPC-UA I/O...`. The OPC-UA section lives in its own window, so the mapping table and the variable chooser get all the room they need.
 
 1. **Connect...** opens the connection dialog: endpoint URL (`opc.tcp://plc:4840`), security policy, anonymous or user/password authentication, and the embedded server options (port, activation). The **Test connection** button validates the endpoint before committing.
 2. **Browse variables...** opens the variable chooser: the remote address space is presented as a lazy tree with name, node id, type, live value and description columns. Search variables by name, multi-select them and press **Bind selected variables** to create mappings.
@@ -58,7 +58,7 @@ Each mapping supports engineering conversions: `webotsValue = scale * opcValue +
 
 ## Mapping Files
 
-Mappings are stored next to the world file as `<world>.opcua.json` and can be loaded/saved from the dock:
+Mappings are stored next to the world file as `<world>.opcua.json` and can be loaded/saved from the window:
 
 ```json
 {
@@ -95,7 +95,7 @@ Certificate management for encrypted endpoints uses the open62541 application op
 
 Two zero-hardware options are available:
 
-1. **Mock backend** (no installation): when Webots is built *without* the open62541 stack, the OPC-UA dock transparently uses an in-memory backend which accepts any endpoint and simulates a demo PLC (`ns=1;s=PLC.Setpoint`, `ns=1;s=PLC.Speed`, `ns=1;s=PLC.Running`, `ns=1;s=PLC.Line.Counter`). Ideal to explore the connection dialog and the variable chooser.
+1. **Mock backend** (no installation): when Webots is built *without* the open62541 stack, the OPC-UA window transparently uses an in-memory backend which accepts any endpoint and simulates a demo PLC (`ns=1;s=PLC.Setpoint`, `ns=1;s=PLC.Speed`, `ns=1;s=PLC.Running`, `ns=1;s=PLC.Line.Counter`). Ideal to explore the connection dialog and the variable chooser.
 2. **Demo server + native stack**: run the bundled demo PLC on any machine with Python:
 
    ```
@@ -110,7 +110,7 @@ Two zero-hardware options are available:
    | `device:four_bar/crank_motor/targetPosition` | `ns=2;s=PLC.Setpoint` | read | 1 |
    | `device:four_bar/crank_sensor/position` | `ns=2;s=PLC.Speed` | write | 1 |
 
-   together with the [four-bar demo world](mechanism-editor.md#demo-world) this gives the complete digital-twin loop: drive the motor from the PLC side and publish the sensor value back.
+   together with the four-bar demo world (`tests/manual_tests/worlds/mechanism_four_bar_linkage.wbt`, see the [Robot Creator](robot-creator.md#demo-world)) this gives the complete digital-twin loop: drive the motor from the PLC side and publish the sensor value back.
 
 ## Building on Windows
 

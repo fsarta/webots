@@ -50,7 +50,6 @@ class WbWheelEvent;
 class WbWrenPicker;
 class WbWrenFullScreenOverlay;
 
-class WbJointManipulator;
 class WbView3D : public WbWrenWindow {
   Q_OBJECT;
 
@@ -62,7 +61,6 @@ public:
 
   // accessor
   WbWrenRenderingContext *wrenRenderingContext() const { return mWrenRenderingContext; }
-  WbJointManipulator *jointManipulator() const { return mJointManipulator; }
   // rendering
   void showBlackRenderingOverlay();
   void hideBlackRenderingOverlay();
@@ -139,7 +137,6 @@ private:
   WbWrenFullScreenOverlay *mVirtualRealityHeadsetOverlay;
 
   WbContactPointsRepresentation *mContactPointsRepresentation;
-  WbJointManipulator *mJointManipulator;
   WbWrenRenderingContext *mWrenRenderingContext;
 
   // Store options before creating thumbnail

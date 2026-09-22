@@ -45,9 +45,10 @@ WB_NODES_INCLUDE         = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_GUI_INC
 WB_APP_INCLUDE           = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(ODE_INCLUDE) $(WREN_INCLUDE) -Icontrol -Icore -Ieditor -Iengine -Imaths -Imechanism -Inodes -Inodes/utils -Iopcua -Iplugins -Iscene_tree -Ivrml
 WB_SCENE_TREE_INCLUDE    = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(ASSIMP_INCLUDE) -isystem external/siphash -Iapp -Icore -Ieditor -Imaths -Imechanism -Inodes -Inodes/utils -Iode -Iopcua -Iuser_commands -Ivrml -Iwidgets
 WB_SOUND_INCLUDE         = $(QT_CORE_INCLUDE) $(QT_XML_INCLUDE) $(ODE_INCLUDE) $(PICO_INCLUDE) -Icore -Imaths -Inodes -Inodes/utils -Isound -Ivrml
-WB_GUI_INCLUDE           = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_WEBSOCKETS_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(QT_OPENGL_INCLUDE) $(QT_OPENGL_WIDGETS_INCLUDE) $(ODE_INCLUDE) $(WREN_INCLUDE) -Iapp -Icontrol -Icore -Iwidgets -Ieditor -Iengine -isystem external/siphash -Imaths -Imechanism -Inodes -Inodes/utils -Iopcua -Iplugins -Iscene_tree -Isound -Iuser_commands -Iutil -Ivrml
+WB_GUI_INCLUDE           = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_WEBSOCKETS_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(QT_OPENGL_INCLUDE) $(QT_OPENGL_WIDGETS_INCLUDE) $(ODE_INCLUDE) $(WREN_INCLUDE) -Iapp -Icontrol -Icore -Iwidgets -Ieditor -Iengine -isystem external/siphash -Imaths -Imechanism -Inodes -Inodes/utils -Iopcua -Irobotcreator -Iplugins -Iscene_tree -Isound -Iuser_commands -Iutil -Ivrml
 WB_MECHANISM_INCLUDE     = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) -Icore -Imaths -Imechanism -Iode -Inodes -Inodes/utils -Iuser_commands -Ivrml
 WB_OPCUA_INCLUDE         = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) -Icore -Imaths -Inodes -Inodes/utils -Iopcua -Iode -Ivrml
+WB_ROBOTCREATOR_INCLUDE  = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(QT_OPENGL_INCLUDE) $(QT_OPENGL_WIDGETS_INCLUDE) -Icore -Imaths -Imechanism -Irobotcreator -Ivrml
 WB_RENDER_INCLUDE        = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_OPENGL_INCLUDE) $(QT_WIDGETS_INCLUDE) $(WREN_INCLUDE) -isystem external/siphash
 
 HOSTTYPE ?= $(shell uname -m)
@@ -313,7 +314,6 @@ QT_SOURCES = WbAboutBox.cpp \
   WbInertialUnit.cpp \
   WbJoint.cpp \
   WbJointDevice.cpp \
-  WbJointManipulator.cpp \
   WbJointParameters.cpp \
   WbJoystickInterface.cpp \
   WbJoystickListener.cpp \
@@ -330,9 +330,6 @@ QT_SOURCES = WbAboutBox.cpp \
   WbMassChecker.cpp \
   WbMaterial.cpp \
   WbMatter.cpp \
-  WbMechanismCanvas.cpp \
-  WbMechanismEditorDock.cpp \
-  WbMechanismModel.cpp \
   WbMesh.cpp \
   WbMFBool.cpp \
   WbMFColor.cpp \
@@ -363,7 +360,8 @@ QT_SOURCES = WbAboutBox.cpp \
   WbOdeContext.cpp \
   WbOpcUaBrowserModel.cpp \
   WbOpcUaConnectionDialog.cpp \
-  WbOpcUaDock.cpp \
+  WbOpcUaWindow.cpp \
+  WbMeshViewport.cpp \
   WbOpcUaManager.cpp \
   WbOpcUaVariableBrowserDialog.cpp \
   WbOpenSampleWorldDialog.cpp \
@@ -393,6 +391,7 @@ QT_SOURCES = WbAboutBox.cpp \
   WbProtoTreeItem.cpp \
   WbQjsFile.cpp \
   WbRadar.cpp \
+  WbRobotCreatorWindow.cpp \
   WbRadio.cpp \
   WbRadioPlugin.cpp \
   WbRangeFinder.cpp \
@@ -597,6 +596,9 @@ OTHER_SOURCES = \
 
 OTHER_SOURCES += \
   WbKinematicGraphCore.cpp \
+  WbMeshCore.cpp \
+  WbRobotProtoCore.cpp \
+  WbSnapCore.cpp \
   WbOpcUaJson.cpp \
   WbOpcUaMapping.cpp \
   WbOpcUaMockBackend.cpp \
@@ -640,8 +642,8 @@ endif
 .PRECIOUS: $(MOC_FILES)
 
 vpath %.o $(OBJDIR)
-vpath %.hpp app control core widgets editor engine external/siphash gui maths mechanism nodes nodes/utils ode opcua wren plugins scene_tree sound user_commands vrml
-vpath %.cpp app control core widgets editor engine external/siphash gui maths mechanism nodes nodes/utils ode opcua wren plugins scene_tree sound user_commands vrml $(OBJDIR)
+vpath %.hpp app control core widgets editor engine external/siphash gui maths mechanism nodes nodes/utils ode opcua robotcreator wren plugins scene_tree sound user_commands vrml
+vpath %.cpp app control core widgets editor engine external/siphash gui maths mechanism nodes nodes/utils ode opcua robotcreator wren plugins scene_tree sound user_commands vrml $(OBJDIR)
 
 default:
 	@echo "Type one of the following (OSTYPE is \""$(OSTYPE)"\"):"
@@ -763,6 +765,9 @@ webots.o:gui/webots.rc gui/webots.ico gui/manifest.xml
 %.o: mechanism/%.cpp
 	@echo "# compiling" $<
 	@$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(WB_MECHANISM_INCLUDE) $< -o $(OBJDIR)/$@
+%.o: robotcreator/%.cpp
+	@echo "# compiling" $<
+	@$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(WB_ROBOTCREATOR_INCLUDE) $< -o $(OBJDIR)/$@
 
 %.o: opcua/%.cpp
 	@echo "# compiling" $<
@@ -851,6 +856,9 @@ $(OBJDIR)/x86_64/%.o: gui/%.cpp
 $(OBJDIR)/x86_64/%.o: mechanism/%.cpp
 	@echo "# compiling" $< "(x86_64)"
 	@$(CXX) -target x86_64-apple-macos12 -c $(CFLAGS) $(CXXFLAGS) $(WB_MECHANISM_INCLUDE) $< -o $@
+$(OBJDIR)/x86_64/%.o: robotcreator/%.cpp
+	@echo "# compiling" $< "(x86_64)"
+	@$(CXX) -target x86_64-apple-macos12 -c $(CFLAGS) $(CXXFLAGS) $(WB_ROBOTCREATOR_INCLUDE) $< -o $@
 
 $(OBJDIR)/x86_64/%.o: opcua/%.cpp
 	@echo "# compiling" $< "(x86_64)"
@@ -940,6 +948,9 @@ $(OBJDIR)/arm64/%.o: gui/%.cpp
 $(OBJDIR)/arm64/%.o: mechanism/%.cpp
 	@echo "# compiling" $< "(arm64)"
 	@$(CXX) -target arm64-apple-macos12 -c $(CFLAGS) $(CXXFLAGS) $(WB_MECHANISM_INCLUDE) $< -o $@
+$(OBJDIR)/arm64/%.o: robotcreator/%.cpp
+	@echo "# compiling" $< "(arm64)"
+	@$(CXX) -target arm64-apple-macos12 -c $(CFLAGS) $(CXXFLAGS) $(WB_ROBOTCREATOR_INCLUDE) $< -o $@
 
 $(OBJDIR)/arm64/%.o: opcua/%.cpp
 	@echo "# compiling" $< "(arm64)"

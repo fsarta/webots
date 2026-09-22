@@ -42,8 +42,8 @@ class QProgressDialog;
 class QTimer;
 
 // cppcheck-suppress noConstructor
-class WbMechanismEditorDock;
-class WbOpcUaDock;
+class WbOpcUaWindow;
+class WbRobotCreatorWindow;
 class WbMainWindow : public QMainWindow {
   Q_OBJECT
   Q_PROPERTY(QString enabledIconPath MEMBER mEnabledIconPath READ enabledIconPath WRITE setEnabledIconPath)
@@ -170,8 +170,11 @@ private:
   int mExitStatus;
   QList<WbConsole *> mConsoles;
   WbBuildEditor *mTextEditor;
-  WbMechanismEditorDock *mMechanismEditor;
-  WbOpcUaDock *mOpcUaDock;
+  void openRobotCreator();
+  void openOpcUaWindow();
+
+  WbOpcUaWindow *mOpcUaWindow = NULL;
+  WbRobotCreatorWindow *mRobotCreatorWindow = NULL;
   WbSimulationView *mSimulationView;
   WbRecentFilesList *mRecentFiles;
   WbOdeDebugger *mOdeDebugger;

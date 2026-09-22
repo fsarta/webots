@@ -1,8 +1,8 @@
 # OPC-UA
 
 The OPC-UA module maps Webots simulation values to OPC UA variables in both directions.
-It is configured through mappings, edited with the **OPC-UA I/O** dock (`Tools > OPC-UA I/O`) and stored in `<world>.opcua.json` next to the world file.
-See the [OPC-UA guide](../guide/opcua.md) for a walkthrough.
+It is configured through mappings, edited with the **OPC-UA I/O** window (`Tools > OPC-UA I/O...`) and stored in `<world>.opcua.json` next to the world file.
+See the [OPC-UA guide](../guide/opcua.md) for a walkthrough and the [Robot Creator guide](../guide/robot-creator.md) for building robots from meshes with CAD-style joint placement.
 
 ## Mapping File Format
 
