@@ -915,6 +915,7 @@ void WbView3D::logWrenStatistics() const {
 void WbView3D::prepareWorldLoading() {
   WbWrenOpenGlContext::makeWrenCurrent();
 
+
   // reset text labels
   WbWrenLabelOverlay::removeAllLabels();
 

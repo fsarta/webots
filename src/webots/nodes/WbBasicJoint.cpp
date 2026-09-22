@@ -15,7 +15,9 @@
 #include "WbBasicJoint.hpp"
 
 #include "WbBoundingSphere.hpp"
+#include "WbField.hpp"
 #include "WbJointParameters.hpp"
+#include "WbSFVector3.hpp"
 #include "WbSlot.hpp"
 #include "WbSolid.hpp"
 #include "WbSolidReference.hpp"
@@ -289,6 +291,32 @@ void WbBasicJoint::setSolidEndPoint(WbSlot *slot) {
   mEndPoint->removeValue();
   mEndPoint->setValue(slot);
   updateEndPoint();
+}
+
+WbField *WbBasicJoint::anchorField() const {
+  WbNode *params = mParameters ? mParameters->value() : NULL;
+  return params ? params->findField("anchor") : NULL;
+}
+
+WbField *WbBasicJoint::axisField() const {
+  WbNode *params = mParameters ? mParameters->value() : NULL;
+  return params ? params->findField("axis") : NULL;
+}
+
+void WbBasicJoint::getAnchorAndAxis(WbVector3 &anchor, WbVector3 &axis) const {
+  anchor = WbVector3();
+  axis = WbVector3(0.0, 0.0, 1.0);
+  WbNode *params = mParameters ? mParameters->value() : NULL;
+  if (!params)
+    return;
+  WbSFVector3 *anchorValue = params->findSFVector3("anchor");
+  if (anchorValue)
+    anchor = anchorValue->value();
+  else
+    anchor = this->anchor();
+  WbSFVector3 *axisValue = params->findSFVector3("axis");
+  if (axisValue)
+    axis = axisValue->value();
 }
 
 WbSolid *WbBasicJoint::solidEndPoint() const {

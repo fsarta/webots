@@ -62,6 +62,11 @@ public:
   WbSolid *solidEndPoint() const;
   WbSolidReference *solidReference() const;
   WbSolid *solidParent() const;
+  // accessors used by the Mechanism Editor 3D manipulators and property panel;
+  // they return NULL when the underlying jointParameters node has no such field
+  WbField *anchorField() const;
+  WbField *axisField() const;
+  void getAnchorAndAxis(WbVector3 &anchor, WbVector3 &axis) const;
   virtual dJointID jointID() const { return mJoint; }
   // endPoint Solid translation and rotation if joint position is 0
   const WbVector3 &zeroEndPointTranslation() const { return mEndPointZeroTranslation; }

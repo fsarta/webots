@@ -56,6 +56,9 @@
 #include "WbRenderingDeviceWindowFactory.hpp"
 #include "WbRobot.hpp"
 #include "WbRobotWindow.hpp"
+#include "WbOpcUaManager.hpp"
+#include "WbOpcUaWindow.hpp"
+#include "WbRobotCreatorWindow.hpp"
 #include "WbSaveWarningDialog.hpp"
 #include "WbSceneTree.hpp"
 #include "WbSelection.hpp"
@@ -220,6 +223,7 @@ WbMainWindow::WbMainWindow(bool minimizedOnStart, WbTcpServer *tcpServer, QWidge
 
 WbMainWindow::~WbMainWindow() {
   delete mFactoryLayout;
+  WbOpcUaManager::cleanup();
 }
 
 void WbMainWindow::lockFullScreen(bool isLocked) {
@@ -400,12 +404,31 @@ void WbMainWindow::createMainTools() {
   connect(mTextEditor, &WbBuildEditor::reloadRequested, this, &WbMainWindow::reloadWorld, Qt::QueuedConnection);
   connect(mTextEditor, &WbBuildEditor::resetRequested, this, &WbMainWindow::resetWorldFromGui, Qt::QueuedConnection);
 
+  // The Robot Creator (joints, links, CAD snaps) and the native OPC-UA I/O
+  // open in dedicated windows: see the Tools menu.
+
   connect(mSimulationView->sceneTree(), &WbSceneTree::documentationRequest, this, &WbMainWindow::showOnlineDocumentation);
   // this instruction does nothing but prevents issues resizing QDockWidgets
   // https://stackoverflow.com/questions/48766663/resize-qdockwidget-without-undocking-and-docking
 
   mOdeDebugger = new WbOdeDebugger();
   connect(WbVideoRecorder::instance(), &WbVideoRecorder::requestOpenUrl, this, &WbMainWindow::openUrl);
+}
+
+void WbMainWindow::openRobotCreator() {
+  if (!mRobotCreatorWindow)
+    mRobotCreatorWindow = new WbRobotCreatorWindow(this);
+  mRobotCreatorWindow->show();
+  mRobotCreatorWindow->raise();
+  mRobotCreatorWindow->activateWindow();
+}
+
+void WbMainWindow::openOpcUaWindow() {
+  if (!mOpcUaWindow)
+    mOpcUaWindow = new WbOpcUaWindow(this);
+  mOpcUaWindow->show();
+  mOpcUaWindow->raise();
+  mOpcUaWindow->activateWindow();
 }
 
 QMenu *WbMainWindow::createFileMenu() {
@@ -767,6 +790,22 @@ QMenu *WbMainWindow::createToolsMenu() {
   menu->addAction(mSimulationView->toggleSceneTreeAction());
   if (mTextEditor)
     menu->addAction(mTextEditor->toggleViewAction());
+  menu->addSeparator();
+
+  QAction *robotCreatorAction = new QAction(this);
+  robotCreatorAction->setText(tr("Robot &Creator..."));
+  robotCreatorAction->setStatusTip(
+    tr("Open the Robot Creator window: build a robot from STL/OBJ meshes with CAD snap points."));
+  robotCreatorAction->setToolTip(robotCreatorAction->statusTip());
+  connect(robotCreatorAction, &QAction::triggered, this, &WbMainWindow::openRobotCreator);
+  menu->addAction(robotCreatorAction);
+
+  QAction *opcUaAction = new QAction(this);
+  opcUaAction->setText(tr("&OPC-UA I/O..."));
+  opcUaAction->setStatusTip(tr("Open the OPC-UA I/O window: connect to an OPC-UA endpoint and choose variables."));
+  opcUaAction->setToolTip(opcUaAction->statusTip());
+  connect(opcUaAction, &QAction::triggered, this, &WbMainWindow::openOpcUaWindow);
+  menu->addAction(opcUaAction);
 
   QAction *action = new QAction(this);
   action->setText(tr("Restore &Layout"));
@@ -1344,6 +1383,10 @@ void WbMainWindow::updateAfterWorldLoading(bool reloading, bool firstLoad) {
     mRecentFiles->makeRecent(world->fileName());
 
   mSimulationView->setWorld(WbSimulationWorld::instance());
+
+  // refresh the OPC-UA I/O window for the new world
+  if (mOpcUaWindow)
+    mOpcUaWindow->refresh();
 
   // update 'view' menu
   const WbPerspective *perspective = world->perspective();

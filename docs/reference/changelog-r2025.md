@@ -1,5 +1,11 @@
 # Webots R2025 Change Log
 
+## Unreleased
+  - Enhancements
+    - Added the **Robot Creator** (`Tools > Robot Creator...`), a dedicated window to build robots starting from STL/OBJ meshes with Fusion-360-style CAD snap points (endpoint, midpoint, circle center, centroid, grid) for joint placement, closed kinematic chain support (`SolidReference` endpoints) and Grübler–Kutzbach mobility validation.
+    - Added a **native OPC-UA module** in its own window (`Tools > OPC-UA I/O...`) with a client-side variable chooser to bind remote OPC UA variables to Webots targets (motors, sensors, fields), an embedded OPC-UA server exposing the mapped variables, engineering conversions and `<world>.opcua.json` mapping files.
+    - Added standalone unit tests for the kinematic graph analysis, the OPC-UA core and the Robot Creator cores (`tests/src`).
+
 ## Webots R2025b
   - Enhancements
     - Added proper `Accelerometer` and `Gyro` nodes for the KHR-3HV robot ([#6959](https://github.com/cyberbotics/webots/pull/6959)).

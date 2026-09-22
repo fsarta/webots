@@ -13,7 +13,7 @@ FREETYPE_PACKAGE = freetype2.tar.bz2
 OIS_PACKAGE = libOIS-1.3.tar.bz2
 PICO_PACKAGE = libpico-1.0.tar.bz2
 
-PACKAGES = qt assimp ffmpeg freetype ois pico
+PACKAGES = qt assimp ffmpeg freetype ois pico open62541
 PACKAGES_CLEAN = $(addsuffix -clean, $(PACKAGES))
 
 .PHONY: release debug distrib profile clean cleanse $(PACKAGES) $(PACKAGES_CLEAN)
@@ -165,3 +165,16 @@ $(WEBOTS_DEPENDENCY_PATH)/$(PICO_PACKAGE):
 	@$(WGET) $(DEPENDENCIES_URL)/$(PICO_PACKAGE) -P $(WEBOTS_DEPENDENCY_PATH)
 	@if [ "7354aa3a597b1703671372a1a6b9c2fd" != `md5 -q $(PICO_PACKAGE)` ]; then echo "MD5 checksum failed for $(PICO_PACKAGE)"; exit 1; fi
 	@touch $(WEBOTS_DEPENDENCY_PATH)/$(PICO_PACKAGE)
+
+open62541-clean:
+	@rm -rf $(WEBOTS_HOME)/include/open62541 $(WEBOTS_HOME_LIB)/libopen62541.a $(WEBOTS_HOME)/build/open62541-*
+
+open62541: $(WEBOTS_HOME)/include/open62541/open62541.h
+
+$(WEBOTS_HOME)/include/open62541/open62541.h:
+	@echo "# Installing open62541"
+	@if command -v cmake >/dev/null 2>&1 && command -v git >/dev/null 2>&1; then \
+	  WEBOTS_HOME=$(WEBOTS_HOME) $(WEBOTS_HOME)/scripts/install/open62541_installer.sh; \
+	else \
+	  echo "# WARNING: git/cmake not found: skipping open62541 (the OPC-UA module will use the mock backend)"; \
+	fi
