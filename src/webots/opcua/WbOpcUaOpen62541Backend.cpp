@@ -220,9 +220,9 @@ std::vector<BrowseEntry> WbOpcUaOpen62541Backend::browse(const std::string &node
   UA_BrowseRequest request;
   UA_BrowseRequest_init(&request);
   request.requestedMaxReferencesPerNode = 1000;
-  request.nodesToBrowse = UA_BrowseDescription_new(1);
+  request.nodesToBrowse = UA_BrowseDescription_new();
   request.nodesToBrowseSize = 1;
-  const UA_NodeId id = toNodeId(nodeId.empty() ? "i=85" : nodeId);
+  UA_NodeId id = toNodeId(nodeId.empty() ? "i=85" : nodeId);
   UA_NodeId_copy(&id, &request.nodesToBrowse[0].nodeId);
   UA_NodeId_clear(&id);  // the copy lives in the request
   request.nodesToBrowse[0].browseDirection = UA_BROWSEDIRECTION_FORWARD;
@@ -271,7 +271,7 @@ bool WbOpcUaOpen62541Backend::read(const std::string &nodeId, Value &value, std:
     error = "not connected";
     return false;
   }
-  const UA_NodeId id = toNodeId(nodeId);
+  UA_NodeId id = toNodeId(nodeId);
   UA_Variant variant;
   UA_Variant_init(&variant);
   const UA_StatusCode status = UA_Client_readValueAttribute(mClient, id, &variant);
@@ -299,7 +299,7 @@ bool WbOpcUaOpen62541Backend::write(const std::string &nodeId, const Value &valu
     error = "unsupported value type";
     return false;
   }
-  const UA_NodeId id = toNodeId(nodeId);
+  UA_NodeId id = toNodeId(nodeId);
   const UA_StatusCode status = UA_Client_writeValueAttribute(mClient, id, &variant);
   UA_NodeId_clear(&id);
   UA_Variant_clear(&variant);
@@ -338,7 +338,7 @@ bool WbOpcUaOpen62541Backend::exposeVariable(const std::string &nodeId, const st
   attributes.displayName = UA_LOCALIZEDTEXT_ALLOC("en", browseName.c_str());
   attributes.accessLevel = readOnly ? (UA_ACCESSLEVELMASK_READ) : (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE);
 
-  const UA_NodeId id = toNodeId("ns=" + std::to_string((int)mNamespaceIndex) + ";s=" + nodeId);
+  UA_NodeId id = toNodeId("ns=" + std::to_string((int)mNamespaceIndex) + ";s=" + nodeId);
   UA_QualifiedName browse = UA_QUALIFIEDNAME_ALLOC(mNamespaceIndex, browseName.c_str());
   const UA_StatusCode status =
     UA_Server_addVariableNode(mServer, id, UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
@@ -346,7 +346,7 @@ bool WbOpcUaOpen62541Backend::exposeVariable(const std::string &nodeId, const st
                               attributes, NULL, NULL);
   UA_NodeId_clear(&id);
   UA_QualifiedName_clear(&browse);
-  UA_NodeId_clear(&attributes.typeId);
+  UA_NodeId_clear(&attributes.dataType);
   UA_LocalizedText_clear(&attributes.displayName);
   UA_Variant_clear(&variant);
   if (status != UA_STATUSCODE_GOOD) {
@@ -361,7 +361,7 @@ bool WbOpcUaOpen62541Backend::unexposeVariable(const std::string &nodeId) {
   if (!mServer)
     return false;
   mExposed.erase(nodeId);
-  const UA_NodeId id = toNodeId("ns=" + std::to_string((int)mNamespaceIndex) + ";s=" + nodeId);
+  UA_NodeId id = toNodeId("ns=" + std::to_string((int)mNamespaceIndex) + ";s=" + nodeId);
   const UA_StatusCode status = UA_Server_deleteNode(mServer, id, true);
   UA_NodeId_clear(&id);
   return status == UA_STATUSCODE_GOOD;
@@ -395,10 +395,10 @@ bool WbOpcUaOpen62541Backend::readExposed(const std::string &nodeId, Value &valu
     return false;
   }
   pumpServer();
-  const UA_NodeId id = toNodeId("ns=" + std::to_string((int)mNamespaceIndex) + ";s=" + nodeId);
+  UA_NodeId id = toNodeId("ns=" + std::to_string((int)mNamespaceIndex) + ";s=" + nodeId);
   UA_Variant variant;
   UA_Variant_init(&variant);
-  const UA_StatusCode status = UA_Server_readValueAttribute(mServer, id, &variant);
+  const UA_StatusCode status = UA_Server_readValue(mServer, id, &variant);
   UA_NodeId_clear(&id);
   if (status != UA_STATUSCODE_GOOD) {
     error = std::string("read failed: ") + UA_StatusCode_name(status);
@@ -424,8 +424,8 @@ bool WbOpcUaOpen62541Backend::writeExposed(const std::string &nodeId, const Valu
     error = "unsupported value type";
     return false;
   }
-  const UA_NodeId id = toNodeId("ns=" + std::to_string((int)mNamespaceIndex) + ";s=" + nodeId);
-  const UA_StatusCode status = UA_Server_writeValueAttribute(mServer, id, &variant);
+  UA_NodeId id = toNodeId("ns=" + std::to_string((int)mNamespaceIndex) + ";s=" + nodeId);
+  const UA_StatusCode status = UA_Server_writeValue(mServer, id, variant);
   UA_NodeId_clear(&id);
   UA_Variant_clear(&variant);
   pumpServer();

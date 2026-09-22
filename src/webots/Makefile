@@ -46,8 +46,8 @@ WB_APP_INCLUDE           = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(ODE_INCLUD
 WB_SCENE_TREE_INCLUDE    = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(ASSIMP_INCLUDE) -isystem external/siphash -Iapp -Icore -Ieditor -Imaths -Imechanism -Inodes -Inodes/utils -Iode -Iopcua -Iuser_commands -Ivrml -Iwidgets
 WB_SOUND_INCLUDE         = $(QT_CORE_INCLUDE) $(QT_XML_INCLUDE) $(ODE_INCLUDE) $(PICO_INCLUDE) -Icore -Imaths -Inodes -Inodes/utils -Isound -Ivrml
 WB_GUI_INCLUDE           = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_WEBSOCKETS_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(QT_OPENGL_INCLUDE) $(QT_OPENGL_WIDGETS_INCLUDE) $(ODE_INCLUDE) $(WREN_INCLUDE) -Iapp -Icontrol -Icore -Iwidgets -Ieditor -Iengine -isystem external/siphash -Imaths -Imechanism -Inodes -Inodes/utils -Iopcua -Iplugins -Iscene_tree -Isound -Iuser_commands -Iutil -Ivrml
-WB_MECHANISM_INCLUDE     = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) -Icore -Imaths -Imechanism -Inodes -Inodes/utils -Iuser_commands -Ivrml
-WB_OPCUA_INCLUDE         = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) -Icore -Imaths -Inodes -Inodes/utils -Iopcua -Ivrml
+WB_MECHANISM_INCLUDE     = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) -Icore -Imaths -Imechanism -Iode -Inodes -Inodes/utils -Iuser_commands -Ivrml
+WB_OPCUA_INCLUDE         = $(QT_CORE_INCLUDE) $(QT_NETWORK_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) -Icore -Imaths -Inodes -Inodes/utils -Iopcua -Iode -Ivrml
 WB_RENDER_INCLUDE        = $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_OPENGL_INCLUDE) $(QT_WIDGETS_INCLUDE) $(WREN_INCLUDE) -isystem external/siphash
 
 HOSTTYPE ?= $(shell uname -m)
@@ -181,7 +181,7 @@ ALL_INCLUDE        = -Iapp -Icontrol -Icore -Iwidgets -Ieditor -Iengine -isystem
 CONTROLLER_INCLUDE = -I$(WEBOTS_PATH)/include/controller/c
 ODE_INCLUDE        = -Iode -isystem $(WEBOTS_PATH)/include/ode
 QT_CORE_INCLUDE   += -I$(OBJDIR)
-WREN_INCLUDE      += -Iwren
+WREN_INCLUDE      += -Iwren -Iode -Imechanism
 INCLUDE            = $(ALL_INCLUDE) $(CONTROLLER_INCLUDE) $(ODE_INCLUDE) $(QT_CORE_INCLUDE) $(QT_GUI_INCLUDE) $(QT_WIDGETS_INCLUDE) $(QT_PRINT_SUPPORT_INCLUDE) $(QT_OPENGL_INCLUDE) $(QT_NETWORK_INCLUDE) $(OIS_INCLUDE) $(PICO_INCLUDE) $(WREN_INCLUDE) $(FREETYPE_INCLUDE) $(STB_INCLUDE) $(ASSIMP_INCLUDE)
 
 ifeq ($(MAKECMDGOALS),debug)

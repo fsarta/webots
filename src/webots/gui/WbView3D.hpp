@@ -50,6 +50,7 @@ class WbWheelEvent;
 class WbWrenPicker;
 class WbWrenFullScreenOverlay;
 
+class WbJointManipulator;
 class WbView3D : public WbWrenWindow {
   Q_OBJECT;
 

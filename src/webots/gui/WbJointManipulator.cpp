@@ -13,6 +13,9 @@
 // limitations under the License.
 
 #include "WbJointManipulator.hpp"
+#include <wren/material.h>
+#include <wren/node.h>
+#include <wren/transform.h>
 
 #include <QtCore/QCoreApplication>
 #include <QtGui/QMouseEvent>
@@ -103,9 +106,9 @@ WbJointManipulator::~WbJointManipulator() {
   if (mMesh)
     wr_dynamic_mesh_delete(mMesh);
   if (mMaterial)
-    wr_material_delete(WR_MATERIAL(mMaterial));
+    wr_material_delete(mMaterial);
   if (mTransform)
-    wr_transform_delete(mTransform);
+    wr_node_delete(WR_NODE(mTransform));
   cInstance = NULL;
 }
 

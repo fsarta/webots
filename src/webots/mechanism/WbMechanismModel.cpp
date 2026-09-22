@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "WbMechanismModel.hpp"
+#include "WbBaseNode.hpp"
 
 #include <QtCore/QPointF>
 #include <QtCore/QSet>
@@ -89,7 +90,7 @@ void WbMechanismModel::collectNode(WbNode *node, long parentLinkId) {
   if (solid) {
     long id = linkIdOfSolid(solid);
     if (id < 0) {
-      id = mGraph.addLink(solid->name().toStdString(), solid->isStatic());
+      id = mGraph.addLink(solid->name().toStdString(), (solid->physics() == NULL));
       mSolids[id] = solid;
       mLinkIds[solid] = id;
     }
@@ -101,13 +102,17 @@ void WbMechanismModel::collectNode(WbNode *node, long parentLinkId) {
     WbSolid *parentSolid = joint->solidParent();
     long parent = parentSolid ? linkIdOfSolid(parentSolid) : parentLinkId;
     WbSolidReference *reference = joint->solidReference();
-    WbSolid *childSolid = reference ? reference->solid() : joint->solidEndPoint();
+    WbSolid *childSolid = NULL;
+    if (reference)
+      childSolid = reference->solid();
+    else
+      childSolid = joint->solidEndPoint();
     bool isLoopClosure = reference != NULL;
     if (parent >= 0 && childSolid) {
       long child = linkIdOfSolid(childSolid);
       if (child < 0) {
         // endpoint solid not registered yet (e.g. forward reference): register it now
-        const long id = mGraph.addLink(childSolid->name().toStdString(), childSolid->isStatic());
+        const long id = mGraph.addLink(childSolid->name().toStdString(), (childSolid->physics() == NULL));
         mSolids[id] = childSolid;
         mLinkIds[childSolid] = id;
         child = id;
@@ -346,8 +351,8 @@ bool WbMechanismModel::addLinkAndJoint(long parentLinkId, wbmechanism::JointType
   endPoint->setValue(solid);
   // insert the joint into the parent link
   children->addItem(jointNode);
-  jointNode->preFinalize();
-  jointNode->postFinalize();
+  dynamic_cast<WbBaseNode *>(jointNode)->preFinalize();
+  dynamic_cast<WbBaseNode *>(jointNode)->postFinalize();
   markWorldModified();
   rebuild();
   return true;
@@ -412,8 +417,8 @@ bool WbMechanismModel::connectLinks(long parentLinkId, long childLinkId, wbmecha
     solidName->setValue(child->name());
   endPoint->setValue(reference);
   children->addItem(jointNode);
-  jointNode->preFinalize();
-  jointNode->postFinalize();
+  dynamic_cast<WbBaseNode *>(jointNode)->preFinalize();
+  dynamic_cast<WbBaseNode *>(jointNode)->postFinalize();
   markWorldModified();
   rebuild();
   return true;

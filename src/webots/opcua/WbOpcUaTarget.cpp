@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "WbOpcUaTarget.hpp"
+#include "WbRotationalMotor.hpp"
 
 #include "WbDevice.hpp"
 #include "WbField.hpp"

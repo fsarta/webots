@@ -413,7 +413,11 @@ void WbMainWindow::createMainTools() {
   connect(mSimulationView->sceneTree(), &WbSceneTree::nodeSelected, mMechanismEditor,
           &WbMechanismEditorDock::notifyNodeSelected);
   connect(WbMechanismModel::instance(), &WbMechanismModel::selectionRequested, WbSelection::instance(),
-          &WbSelection::selectNodeFromSceneTree);
+          [](WbNode *node) {
+            WbBaseNode *baseNode = dynamic_cast<WbBaseNode *>(node);
+            if (baseNode)
+              WbSelection::instance()->selectNodeFromSceneTree(baseNode);
+          });
 
   // native OPC-UA I/O
   mOpcUaDock = new WbOpcUaDock(this);

@@ -118,7 +118,7 @@ WbMechanismEditorDock::WbMechanismEditorDock(QWidget *parent) :
   connect(mCanvas, &WbMechanismCanvas::createJointRequested, this, &WbMechanismEditorDock::onCreateJointRequested);
   connect(mCanvas, &WbMechanismCanvas::deleteJointRequested, this, &WbMechanismEditorDock::onDeleteJointRequested);
   connect(mCanvas, &WbMechanismCanvas::linkPositionChanged, this, &WbMechanismEditorDock::onLinkPositionChanged);
-  connect(mCanvas, &WbMechanismCanvas::statusMessage, this, &WbMechanismEditorDock::showMessage);
+  connect(mCanvas, &WbMechanismCanvas::statusMessage, this, [this](const QString &msg) { showMessage(msg, false); });
 
   mPropertyStack = new QStackedWidget(container);
   mPropertyStack->addWidget(new QLabel(tr("Select a link or a joint to edit its properties."), mPropertyStack));
